@@ -1,0 +1,198 @@
+main.lua
+local Players = game:GetService("Players")
+
+local lp = Players.LocalPlayer
+
+local RS = game:GetService("RunService")
+
+
+
+-- 1. FUNÇÃO PARA O ANÚNCIO GLOBAL (Aparece para todos)
+
+local function anunciarGlobal()
+
+    for _, p in pairs(Players:GetPlayers()) do
+
+        local pg = p:FindFirstChild("PlayerGui")
+
+        if pg then
+
+            local sg = Instance.new("ScreenGui", pg)
+
+            local txt = Instance.new("TextLabel", sg)
+
+            txt.Size = UDim2.new(1, 0, 1, 0)
+
+            txt.BackgroundTransparency = 1
+
+            txt.Text = "JESUS VOLTOU!!!"
+
+            txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+            txt.TextStrokeTransparency = 0
+
+            txt.TextStrokeColor3 = Color3.fromRGB(0, 170, 255)
+
+            txt.TextScaled = true
+
+            txt.FontFace = Font.fromName("PressStart2P")
+
+            task.delay(10, function() sg:Destroy() end) -- Some após 10s
+
+        end
+
+    end
+
+end
+
+
+
+-- 2. INTERFACE DO HUB
+
+local function criarHub()
+
+    local sg = Instance.new("ScreenGui", game.CoreGui)
+
+    sg.Name = "BibliaHubX"
+
+   
+
+    local frame = Instance.new("Frame", sg)
+
+    frame.Size = UDim2.new(0, 220, 0, 120)
+
+    frame.Position = UDim2.new(0.5, -110, 0.1, 0)
+
+    frame.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
+
+    frame.Active = true
+
+    frame.Draggable = true
+
+    Instance.new("UICorner", frame)
+
+
+
+    local btn = Instance.new("TextButton", frame)
+
+    btn.Size = UDim2.new(0.9, 0, 0.7, 0)
+
+    btn.Position = UDim2.new(0.05, 0, 0.15, 0)
+
+    btn.BackgroundColor3 = Color3.fromRGB(85, 255, 127)
+
+    btn.Text = "TRAVAR SERVER"
+
+    btn.TextScaled = true
+
+    btn.FontFace = Font.fromName("LuckiestGuy")
+
+    Instance.new("UICorner", btn)
+
+
+
+    btn.MouseButton1Click:Connect(function()
+
+        anunciarGlobal()
+
+        local pBase = Instance.new("Part")
+
+        pBase.Size = Vector3.new(15, 15, 15)
+
+        pBase.BrickColor = BrickColor.new("Bright blue")
+
+        pBase.Material = Enum.Material.Neon
+
+        pBase.CustomPhysicalProperties = PhysicalProperties.new(700000, 0.5, 0.5)
+
+
+
+        for i = 1, 10000 do -- Limite de segurança para o executor
+
+            local c = pBase:Clone()
+
+            c.Position = lp.Character.HumanoidRootPart.Position + Vector3.new(math.random(-100,100), 200, math.random(-100,100))
+
+            c.Parent = game.Workspace
+
+            if i % 50 == 0 then task.wait(0.05) end
+
+        end
+
+    end)
+
+end
+
+
+
+-- 3. CAJADO + CÚPULA + KILL AURA
+
+local function criarCajado()
+
+    local tool = Instance.new("Tool", lp.Backpack)
+
+    tool.Name = "Cajado da Justiça ✝️"
+
+    local h = Instance.new("Part", tool)
+
+    h.Name = "Handle"
+
+    h.Size = Vector3.new(0.5, 7, 0.5)
+
+    h.BrickColor = BrickColor.new("Bright blue")
+
+    h.Material = Enum.Material.Neon
+
+
+
+    local aura = Instance.new("Part")
+
+    aura.Shape = Enum.PartType.Ball
+
+    aura.Size = Vector3.new(30, 30, 30)
+
+    aura.Color = Color3.fromRGB(0, 170, 255)
+
+    aura.Material = Enum.Material.ForceField
+
+    aura.Transparency = 0.6
+
+    aura.CanCollide = false
+
+    aura.Anchored = true
+
+
+
+    local ligada = false
+
+    tool.Equipped:Connect(function()
+
+        ligada = true
+
+        aura.Parent = game.Workspace
+
+        while ligada do
+
+            local hrp = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
+
+            if hrp then
+
+                aura.Position = hrp.Position
+
+                for _, v in pairs(Players:GetPlayers()) do
+
+                    if v ~= lp and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+
+                        if (hrp.Position - v.Character.HumanoidRootPart.Position).Magnitude <= 15 then
+
+                            v.Character:BreakJoints()
+
+                        end
+
+                    end
+
+                end
+
+            end
+
+            task.wait(0.1)
